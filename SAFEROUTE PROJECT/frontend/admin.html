@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin panel · SafeRoute</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <header class="app-nav">
+    <div class="app-nav__brand">
+      <svg width="22" height="22" viewBox="0 0 26 26" fill="none">
+        <path d="M3 20L10 6L16 15L22 5" stroke="#E8A33D" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="22" cy="5" r="2.4" fill="#2F7D5C"/>
+      </svg>
+      <span>SafeRoute</span>
+    </div>
+
+    <nav class="app-nav__tabs">
+      <a href="index.html" class="view-tab" style="text-decoration:none; display:inline-flex; align-items:center;">Hazards</a>
+      <a href="route.html" class="view-tab" style="text-decoration:none; display:inline-flex; align-items:center;">Route search</a>
+      <a href="notifications.html" class="view-tab" style="text-decoration:none; display:inline-flex; align-items:center;">
+        Notifications
+        <span class="unread-dot" id="nav-unread-dot" hidden></span>
+      </a>
+      <a href="profile.html" class="view-tab" style="text-decoration:none; display:inline-flex; align-items:center;">Profile</a>
+      <a href="admin.html" class="view-tab is-active" style="text-decoration:none; display:inline-flex; align-items:center;">Admin panel</a>
+    </nav>
+
+    <div class="app-nav__actions">
+      <div class="app-nav__user">
+        <span class="badge" id="nav-user-badge">ADMIN</span>
+        <a href="profile.html" id="nav-user-name" style="text-decoration:none; color:inherit; font-weight:500;">Account</a>
+        <button type="button" class="link-btn" id="logout-btn">Log out</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="admin-shell">
+
+    <p class="banner banner--error" id="admin-forbidden-banner">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.4"/><path d="M8 4.5V9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="8" cy="11.2" r="0.9" fill="currentColor"/></svg>
+      <span>This page is only available to administrators.</span>
+    </p>
+
+    <div id="admin-content" hidden>
+
+      <nav class="admin-tabs" role="tablist">
+        <button type="button" class="admin-tab is-active" data-admin-tab="pending" role="tab">
+          Pending review <span class="admin-tab__count" id="pending-count"></span>
+        </button>
+        <button type="button" class="admin-tab" data-admin-tab="verified" role="tab">Verified hazards</button>
+        <button type="button" class="admin-tab" data-admin-tab="reports" role="tab">Reports</button>
+        <button type="button" class="admin-tab" data-admin-tab="audit" role="tab">Audit log</button>
+      </nav>
+
+      <p class="banner banner--error" id="admin-error"></p>
+      <p class="banner banner--success" id="admin-success"></p>
+
+      <!-- ============ Pending review ============ -->
+      <section class="admin-pane" id="pane-pending">
+        <p class="field__hint" style="margin-bottom:var(--space-5);">
+          Newly reported hazards awaiting a decision, oldest first. Verifying makes a hazard publicly visible; rejecting always requires a reason.
+        </p>
+        <div class="review-list" id="pending-list"></div>
+        <p class="empty-state" id="pending-empty" hidden>Nothing waiting on review right now.</p>
+      </section>
+
+      <!-- ============ Verified hazards ============ -->
+      <section class="admin-pane" id="pane-verified" hidden>
+        <div class="admin-pane__head">
+          <p class="field__hint" style="margin:0;">
+            Currently verified hazards. Hide one to pull it from public listings without discarding its verification, or resolve it once the situation has cleared.
+          </p>
+          <button type="button" class="btn btn-primary btn--compact" id="expire-overdue-btn">Expire overdue hazards</button>
+        </div>
+        <div class="data-table-wrap table-scroll">
+          <table class="data-table" id="verified-table">
+            <thead>
+              <tr>
+                <th>Title</th><th>Type</th><th>Severity</th><th>City</th>
+                <th>Visibility</th><th>Verified</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="verified-tbody"></tbody>
+          </table>
+        </div>
+        <p class="empty-state" id="verified-empty" hidden>No verified hazards yet.</p>
+      </section>
+
+      <!-- ============ Reports ============ -->
+      <section class="admin-pane" id="pane-reports" hidden>
+        <div id="reports-body">
+          <p class="session-loading">Loading report data…</p>
+        </div>
+      </section>
+
+      <!-- ============ Audit log ============ -->
+      <section class="admin-pane" id="pane-audit" hidden>
+        <form class="audit-filters" id="audit-filter-form">
+          <input type="text" id="audit-action" placeholder="Action, e.g. HAZARD_REJECTED">
+          <input type="number" id="audit-user-id" placeholder="User ID">
+          <button type="submit" class="btn btn-primary btn--compact">Filter</button>
+          <button type="button" class="link-btn" id="audit-clear-btn">Clear</button>
+        </form>
+        <div class="data-table-wrap table-scroll">
+          <table class="data-table" id="audit-table">
+            <thead>
+              <tr><th>When</th><th>Action</th><th>Resource</th><th>User</th><th>Description</th></tr>
+            </thead>
+            <tbody id="audit-tbody"></tbody>
+          </table>
+        </div>
+        <p class="empty-state" id="audit-empty" hidden>No audit log entries match those filters.</p>
+        <div class="audit-pagination">
+          <button type="button" class="link-btn" id="audit-prev-btn">&larr; Newer</button>
+          <span id="audit-page-label" class="field__hint" style="margin:0;"></span>
+          <button type="button" class="link-btn" id="audit-next-btn">Older &rarr;</button>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<!-- Reason-note modal, shared by Reject / Resolve / Hide -->
+<div class="modal-overlay" id="reason-modal" hidden>
+  <div class="modal">
+    <div class="modal__head">
+      <h3 id="reason-modal-title">Add a note</h3>
+      <button type="button" class="modal__close" id="reason-modal-close" aria-label="Close">&times;</button>
+    </div>
+    <form id="reason-form" novalidate>
+      <p class="banner banner--error" id="reason-banner"></p>
+      <div class="field">
+        <label for="reason-note" id="reason-note-label">Note</label>
+        <textarea id="reason-note" rows="3" placeholder="Explain the decision…"></textarea>
+        <p class="field__hint" id="reason-note-hint"></p>
+      </div>
+      <button type="submit" class="btn btn-primary" id="reason-submit-btn">
+        <span class="btn__spinner"></span>
+        <span class="btn__label" id="reason-submit-label">Confirm</span>
+      </button>
+    </form>
+  </div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>

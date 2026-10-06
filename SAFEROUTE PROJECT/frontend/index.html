@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard · SafeRoute</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <header class="app-nav">
+    <div class="app-nav__brand">
+      <svg width="22" height="22" viewBox="0 0 26 26" fill="none">
+        <path d="M3 20L10 6L16 15L22 5" stroke="#E8A33D" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="22" cy="5" r="2.4" fill="#2F7D5C"/>
+      </svg>
+      <span>SafeRoute</span>
+    </div>
+
+    <nav class="app-nav__tabs">
+      <button type="button" class="view-tab is-active" data-view-tab="public">Public hazards</button>
+      <button type="button" class="view-tab" data-view-tab="mine">My reports</button>
+      <button type="button" class="view-tab" data-view-tab="nearby">Near me</button>
+    </nav>
+
+    <div class="app-nav__actions">
+      <a href="notifications.html" class="link-btn" style="text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+        Notifications
+        <span class="unread-dot" id="nav-unread-dot" hidden></span>
+      </a>
+      <a href="route.html" class="btn btn-primary btn--compact" style="text-decoration:none; display:inline-flex; align-items:center;">Route search</a>
+      <button type="button" class="btn btn-primary btn--compact" id="report-btn">Report hazard</button>
+      <div class="app-nav__user">
+        <a href="admin.html" class="link-btn" id="nav-admin-link" hidden style="text-decoration:none;">Admin panel</a>
+        <a href="profile.html" class="link-btn" id="nav-profile-link" style="text-decoration:none;">Profile</a>
+        <span class="badge" id="nav-user-badge">USER</span>
+        <a href="profile.html" id="nav-user-name" style="text-decoration:none; color:inherit; font-weight:500;">Account</a>
+        <button type="button" class="link-btn" id="logout-btn">Log out</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="app-body">
+
+    <aside class="filters-panel">
+      <div class="filter-group" id="nearby-panel" hidden>
+        <h3>Location</h3>
+        <button type="button" class="btn btn-primary btn--compact" id="locate-btn" style="width:100%;">Use my location</button>
+        <p class="field__hint" id="nearby-status">Click "Use my location" to find hazards near you.</p>
+      </div>
+
+      <div class="filter-group">
+        <h3>Type</h3>
+        <div class="filter-chip-row">
+          <button type="button" class="filter-chip" data-filter-type="road_closure">Road closure</button>
+          <button type="button" class="filter-chip" data-filter-type="flooding">Flooding</button>
+          <button type="button" class="filter-chip" data-filter-type="waterlogging">Waterlogging</button>
+          <button type="button" class="filter-chip" data-filter-type="construction">Construction</button>
+          <button type="button" class="filter-chip" data-filter-type="blocked_road">Blocked road</button>
+          <button type="button" class="filter-chip" data-filter-type="accident">Accident</button>
+          <button type="button" class="filter-chip" data-filter-type="temporary_restriction">Temp. restriction</button>
+          <button type="button" class="filter-chip" data-filter-type="other">Other</button>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <h3>Severity</h3>
+        <div class="filter-chip-row">
+          <button type="button" class="filter-chip is-active" data-filter-severity data-value="">Any</button>
+          <button type="button" class="filter-chip" data-filter-severity data-value="low">Low</button>
+          <button type="button" class="filter-chip" data-filter-severity data-value="medium">Medium</button>
+          <button type="button" class="filter-chip" data-filter-severity data-value="high">High</button>
+          <button type="button" class="filter-chip" data-filter-severity data-value="critical">Critical</button>
+        </div>
+      </div>
+
+      <div class="filter-group" id="city-filter-group">
+        <h3>City</h3>
+        <input type="text" id="city-input" placeholder="e.g. Vijayawada">
+      </div>
+
+      <button type="button" class="link-btn" id="clear-filters">Clear all filters</button>
+    </aside>
+
+    <main class="hazards-main">
+      <div class="hazards-main__head">
+        <h2>Reported hazards</h2>
+        <span class="results-count" id="results-count"></span>
+      </div>
+
+      <p class="banner banner--error" id="list-error" hidden></p>
+
+      <div class="hazards-list" id="hazards-list"></div>
+
+      <p class="empty-state" id="empty-state" hidden>No hazards match your filters yet.</p>
+    </main>
+
+  </div>
+</div>
+
+<!-- Report / edit hazard modal -->
+<div class="modal-overlay" id="report-modal" hidden>
+  <div class="modal">
+    <div class="modal__head">
+      <h3 id="report-modal-title">Report a hazard</h3>
+      <button type="button" class="modal__close" id="report-modal-close" aria-label="Close">&times;</button>
+    </div>
+
+    <form id="report-form" novalidate>
+      <div class="banner banner--error" id="report-banner">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.4"/><path d="M8 4.5V9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="8" cy="11.2" r="0.9" fill="currentColor"/></svg>
+        <span id="report-banner-text"></span>
+      </div>
+
+      <div class="field">
+        <label for="report-type">Type</label>
+        <select id="report-type"></select>
+      </div>
+
+      <div class="field">
+        <label for="report-severity">Severity</label>
+        <select id="report-severity">
+          <option value="low">Low</option>
+          <option value="medium" selected>Medium</option>
+          <option value="high">High</option>
+          <option value="critical">Critical</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="report-title">Title</label>
+        <input type="text" id="report-title" placeholder="Short summary, e.g. Waterlogged underpass" required maxlength="150">
+      </div>
+
+      <div class="field">
+        <label for="report-description">Description</label>
+        <textarea id="report-description" rows="3" placeholder="What's happening here?" required></textarea>
+      </div>
+
+      <div class="field">
+        <label for="report-address">Address <span class="field__hint" style="display:inline;">(optional)</span></label>
+        <input type="text" id="report-address" placeholder="Street or landmark" maxlength="255">
+      </div>
+
+      <div class="field">
+        <label for="report-city">City <span class="field__hint" style="display:inline;">(optional)</span></label>
+        <input type="text" id="report-city" placeholder="e.g. Vijayawada" maxlength="100">
+      </div>
+
+      <div class="field" id="report-latlng-group">
+        <label>Coordinates</label>
+        <div style="display:flex; gap:8px; margin-bottom:8px;">
+          <input type="number" step="any" id="report-latitude" placeholder="Latitude" required>
+          <input type="number" step="any" id="report-longitude" placeholder="Longitude" required>
+        </div>
+        <button type="button" class="link-btn" id="use-my-location-btn">Use my location</button>
+      </div>
+
+      <div class="field" id="report-starttime-group">
+        <label for="report-start-time">Start time</label>
+        <input type="datetime-local" id="report-start-time" required>
+      </div>
+
+      <div class="field">
+        <label for="report-end-time">Expected end time <span class="field__hint" style="display:inline;">(optional)</span></label>
+        <input type="datetime-local" id="report-end-time">
+      </div>
+
+      <p class="field__hint" style="margin-top:-8px; margin-bottom:20px;">
+        Reports go through a quick verification step before they're shown publicly.
+      </p>
+
+      <button type="submit" class="btn btn-primary" id="report-submit-btn">
+        <span class="btn__spinner"></span>
+        <span class="btn__label" id="report-submit-label">Submit report</span>
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- Hazard detail modal -->
+<div class="modal-overlay" id="detail-modal" hidden>
+  <div class="modal">
+    <div class="modal__head">
+      <h3>Hazard details</h3>
+      <button type="button" class="modal__close" id="detail-modal-close" aria-label="Close">&times;</button>
+    </div>
+    <div id="detail-modal-body"></div>
+  </div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/hazards.js"></script>
+</body>
+</html>

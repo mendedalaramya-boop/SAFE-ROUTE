@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notifications · SafeRoute</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <header class="app-nav">
+    <div class="app-nav__brand">
+      <svg width="22" height="22" viewBox="0 0 26 26" fill="none">
+        <path d="M3 20L10 6L16 15L22 5" stroke="#E8A33D" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="22" cy="5" r="2.4" fill="#2F7D5C"/>
+      </svg>
+      <span>SafeRoute</span>
+    </div>
+
+    <nav class="app-nav__tabs">
+      <a href="index.html" class="view-tab" style="text-decoration:none; display:inline-flex; align-items:center;">Hazards</a>
+      <a href="route.html" class="view-tab" style="text-decoration:none; display:inline-flex; align-items:center;">Route search</a>
+      <a href="notifications.html" class="view-tab is-active" style="text-decoration:none; display:inline-flex; align-items:center;">
+        Notifications
+        <span class="unread-dot" id="nav-unread-dot" hidden></span>
+      </a>
+      <a href="profile.html" class="view-tab" style="text-decoration:none; display:inline-flex; align-items:center;">Profile</a>
+    </nav>
+
+    <div class="app-nav__actions">
+      <div class="app-nav__user">
+        <a href="admin.html" class="link-btn" id="nav-admin-link" hidden style="text-decoration:none;">Admin panel</a>
+        <span class="badge" id="nav-user-badge">USER</span>
+        <a href="profile.html" id="nav-user-name" style="text-decoration:none; color:inherit; font-weight:500;">Account</a>
+        <button type="button" class="link-btn" id="logout-btn">Log out</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="app-body">
+
+    <aside class="filters-panel">
+      <div class="filter-group">
+        <h3>Show</h3>
+        <div class="filter-chip-row" style="flex-direction:column; align-items:flex-start;">
+          <button type="button" class="filter-chip is-active" data-filter="all" style="width:100%; text-align:left; border-radius: var(--radius);">All notifications</button>
+          <button type="button" class="filter-chip" data-filter="unread" style="width:100%; text-align:left; border-radius: var(--radius);">Unread only</button>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <button type="button" class="link-btn" id="mark-all-read-btn">Mark all as read</button>
+      </div>
+    </aside>
+
+    <main class="hazards-main">
+      <div class="hazards-main__head">
+        <h2>Notifications</h2>
+        <span class="results-count" id="results-count"></span>
+      </div>
+
+      <p class="banner banner--error" id="list-error" hidden></p>
+
+      <div id="notifications-loading" class="session-loading">Loading notifications…</div>
+      <div class="notifications-list" id="notifications-list"></div>
+
+      <p class="empty-state" id="empty-state" hidden>Nothing here yet -- you'll see updates on your reports and hazards along your recent routes.</p>
+    </main>
+
+  </div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/notifications.js"></script>
+</body>
+</html>

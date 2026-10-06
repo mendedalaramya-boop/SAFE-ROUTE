@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Profile · SafeRoute</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <header class="app-nav">
+    <div class="app-nav__brand">
+      <svg width="22" height="22" viewBox="0 0 26 26" fill="none">
+        <path d="M3 20L10 6L16 15L22 5" stroke="#E8A33D" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="22" cy="5" r="2.4" fill="#2F7D5C"/>
+      </svg>
+      <span>SafeRoute</span>
+    </div>
+
+    <nav class="app-nav__tabs">
+      <a href="index.html" class="view-tab" style="text-decoration:none; display:inline-flex; align-items:center;">Hazards</a>
+      <a href="route.html" class="view-tab" style="text-decoration:none; display:inline-flex; align-items:center;">Route search</a>
+      <a href="notifications.html" class="view-tab" style="text-decoration:none; display:inline-flex; align-items:center;">
+        Notifications
+        <span class="unread-dot" id="nav-unread-dot" hidden></span>
+      </a>
+      <a href="profile.html" class="view-tab is-active" style="text-decoration:none; display:inline-flex; align-items:center;">Profile</a>
+    </nav>
+
+    <div class="app-nav__actions">
+      <div class="app-nav__user">
+        <a href="admin.html" class="link-btn" id="nav-admin-link" hidden style="text-decoration:none;">Admin panel</a>
+        <span class="badge" id="nav-user-badge">USER</span>
+        <span id="nav-user-name">Account</span>
+        <button type="button" class="link-btn" id="logout-btn">Log out</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="app-body" style="grid-template-columns: 1fr; max-width: 860px;">
+
+    <main class="hazards-main">
+      <div class="hazards-main__head">
+        <h2>My Profile</h2>
+        <span class="results-count" id="profile-role-tag">Account details</span>
+      </div>
+
+      <p class="banner banner--error" id="profile-error"></p>
+      <p class="banner banner--success" id="profile-success"></p>
+
+      <div id="profile-loading" class="session-loading">Loading your profile…</div>
+
+      <div id="profile-content" hidden style="display:flex; flex-direction:column; gap:var(--space-6);">
+
+        <!-- Profile Overview Card -->
+        <article class="review-card" style="align-items:center; justify-content:space-between;">
+          <div style="display:flex; align-items:center; gap:var(--space-4);">
+            <div style="width:54px; height:54px; border-radius:50%; background:var(--ink); color:#fff; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:700;" id="profile-avatar">
+              U
+            </div>
+            <div>
+              <h3 id="overview-name" style="font-size:1.15rem; margin:0 0 4px;">User Name</h3>
+              <p id="overview-email" style="margin:0; color:var(--text-secondary); font-size:0.92rem;">email@example.com</p>
+            </div>
+          </div>
+          <div style="display:flex; gap:var(--space-3); align-items:center; flex-wrap:wrap;">
+            <span class="badge badge--user" id="overview-role-badge">USER</span>
+            <span class="badge badge--status-verified" id="overview-status-badge">ACTIVE</span>
+            <span class="field__hint" id="overview-created-at" style="margin:0;">Joined —</span>
+          </div>
+        </article>
+
+        <!-- Edit Profile Details Form -->
+        <div class="review-card" style="flex-direction:column; align-items:stretch;">
+          <h3 style="margin-bottom:var(--space-4); font-size:1.05rem;">Personal Information</h3>
+          <form id="profile-details-form" novalidate style="display:flex; flex-direction:column; gap:var(--space-4);">
+            <div class="field" id="field-profile-name">
+              <label for="profile-name">Full Name</label>
+              <input type="text" id="profile-name" required placeholder="Your full name">
+            </div>
+
+            <div class="field" id="field-profile-email">
+              <label for="profile-email">Email Address</label>
+              <input type="email" id="profile-email" required placeholder="your.email@example.com">
+            </div>
+
+            <div style="display:flex; justify-content:flex-end;">
+              <button type="submit" class="btn btn-primary" id="save-details-btn" style="width:auto; min-width:140px;">
+                <span class="btn__spinner"></span>
+                <span class="btn__label">Save Changes</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Change Password Form -->
+        <div class="review-card" style="flex-direction:column; align-items:stretch;">
+          <h3 style="margin-bottom:var(--space-4); font-size:1.05rem;">Change Password</h3>
+          <form id="profile-password-form" novalidate style="display:flex; flex-direction:column; gap:var(--space-4);">
+            <div class="field" id="field-current-password">
+              <label for="current-password">Current Password (optional if keeping same session)</label>
+              <input type="password" id="current-password" placeholder="Enter current password">
+            </div>
+
+            <div class="coord-pair">
+              <div class="field" id="field-new-password" style="width:100%;">
+                <label for="new-password">New Password</label>
+                <input type="password" id="new-password" placeholder="At least 8 characters" required>
+              </div>
+
+              <div class="field" id="field-confirm-password" style="width:100%;">
+                <label for="confirm-password">Confirm New Password</label>
+                <input type="password" id="confirm-password" placeholder="Re-enter new password" required>
+              </div>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end;">
+              <button type="submit" class="btn btn-primary" id="save-password-btn" style="width:auto; min-width:160px;">
+                <span class="btn__spinner"></span>
+                <span class="btn__label">Update Password</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </main>
+
+  </div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/profile.js"></script>
+</body>
+</html>

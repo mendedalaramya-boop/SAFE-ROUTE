@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Route search · SafeRoute</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css?v=10">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <header class="app-nav">
+    <div class="app-nav__brand">
+      <svg width="22" height="22" viewBox="0 0 26 26" fill="none">
+        <path d="M3 20L10 6L16 15L22 5" stroke="#E8A33D" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="22" cy="5" r="2.4" fill="#2F7D5C"/>
+      </svg>
+      <span>SafeRoute</span>
+    </div>
+
+    <nav class="app-nav__tabs">
+      <a href="index.html" class="view-tab" style="text-decoration:none; display:inline-flex; align-items:center;">Hazards</a>
+      <a href="route.html" class="view-tab is-active" style="text-decoration:none; display:inline-flex; align-items:center;">Route search</a>
+      <a href="notifications.html" class="view-tab" style="text-decoration:none; display:inline-flex; align-items:center;">
+        Notifications
+        <span class="unread-dot" id="nav-unread-dot" hidden></span>
+      </a>
+      <a href="profile.html" class="view-tab" style="text-decoration:none; display:inline-flex; align-items:center;">Profile</a>
+    </nav>
+
+    <div class="app-nav__actions">
+      <div class="app-nav__user">
+        <a href="admin.html" class="link-btn" id="nav-admin-link" hidden style="text-decoration:none;">Admin panel</a>
+        <span class="badge" id="nav-user-badge">USER</span>
+        <a href="profile.html" id="nav-user-name" style="text-decoration:none; color:inherit; font-weight:500;">Account</a>
+        <button type="button" class="link-btn" id="logout-btn">Log out</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="app-body">
+
+    <aside class="route-form-panel">
+      <form id="route-form" novalidate>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <h3>From</h3>
+          <button type="button" class="link-btn" id="use-my-location-btn" style="font-size:12px;">📍 My location</button>
+        </div>
+        <input type="text" id="origin-address" placeholder="e.g. Vijayawada Railway Station" required>
+
+        <h3 style="margin-top: var(--space-4);">To</h3>
+        <input type="text" id="dest-address" placeholder="e.g. Guntur Bus Stand" required>
+
+        <p class="banner banner--error" id="route-banner">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.4"/><path d="M8 4.5V9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="8" cy="11.2" r="0.9" fill="currentColor"/></svg>
+          <span id="route-banner-text"></span>
+        </p>
+
+        <button type="submit" class="btn btn-primary" id="route-submit-btn" style="margin-top: var(--space-4); width: 100%;">
+          <span class="btn__spinner"></span>
+          <span class="btn__label">Search route</span>
+        </button>
+
+        <div style="margin-top: var(--space-5);">
+          <h4 style="font-size: 11.5px; text-transform: uppercase; color: var(--slate); margin-bottom: 8px;">Quick test routes</h4>
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <button type="button" class="link-btn preset-route-btn" data-from="Vijayawada Railway Station" data-to="Guntur Bus Stand" style="text-align:left;">
+              Vijayawada → Guntur (NH16)
+            </button>
+            <button type="button" class="link-btn preset-route-btn" data-from="Benz Circle, Vijayawada" data-to="Auto Nagar, Vijayawada" style="text-align:left;">
+              Benz Circle → Auto Nagar (Flood zone)
+            </button>
+            <button type="button" class="link-btn preset-route-btn" data-from="Gannavaram Airport Road, AP" data-to="Benz Circle, Vijayawada" style="text-align:left;">
+              Gannavaram Airport → Benz Circle
+            </button>
+          </div>
+          <p class="field__hint" style="margin-top:10px; font-size:12px;">
+            Tip: You can also click directly on the map to set your start and destination points.
+          </p>
+        </div>
+      </form>
+    </aside>
+
+    <main class="route-results">
+      <!-- Map is always visible as the main interactive element -->
+      <div class="route-map-container" style="position: relative;">
+        <div id="route-map"></div>
+        <div id="map-status-overlay" class="map-overlay-badge">
+          <span id="map-status-text">Ready. Search a route to display highway geometry and hazard alerts.</span>
+        </div>
+      </div>
+
+      <div id="route-empty" class="empty-state">
+        Enter a starting point and destination to compute road driving directions and inspect verified hazards along your corridor.
+      </div>
+
+      <div id="route-output" hidden>
+        <div class="route-stats" id="route-stats"></div>
+
+        <div class="safety-note">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.4"/><path d="M8 4.5V9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="8" cy="11.2" r="0.9" fill="currentColor"/></svg>
+          <span id="safety-note-text">SafeRoute reports hazards found near this route. It does not guarantee the route is safe -- always use your own judgment.</span>
+        </div>
+
+        <div>
+          <div class="hazards-main__head" style="margin-bottom: var(--space-3);">
+            <h2 id="route-hazards-heading">Hazards near this route</h2>
+            <span class="provider-tag" id="provider-tag"></span>
+          </div>
+          <div class="route-hazards-grid" id="route-hazards-list"></div>
+        </div>
+      </div>
+    </main>
+
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="js/config.js?v=10"></script>
+<script src="js/api.js?v=10"></script>
+<script src="js/route.js?v=10"></script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+
+# SafeRoute secrets & local DB
+.env*
+*.env
+*.env.*
+!Saferoute-backend/saferoute/.env.example
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+*.sqlite-*
+*.pem
+*.p12
+*.pfx
+*.key
+
+# Dependencies & build output
+node_modules/
+build/
+dist/
+target/
+.next/
+coverage/
+
+# Logs
+*.log
+
+# Unit test / coverage
+.coverage
+.coverage.*
+.pytest_cache/
+htmlcov/
+
+# Editor & OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

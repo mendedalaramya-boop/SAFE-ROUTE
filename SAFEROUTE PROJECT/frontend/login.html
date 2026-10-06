@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Log in · SafeRoute</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<div class="auth-shell">
+
+  <!-- Brand panel -->
+  <div class="auth-brand">
+    <div class="auth-brand__mark">
+      <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+        <path d="M3 20L10 6L16 15L22 5" stroke="#E8A33D" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="22" cy="5" r="2.4" fill="#2F7D5C"/>
+      </svg>
+      <span>SafeRoute</span>
+    </div>
+
+    <div class="auth-brand__body">
+      <h1>Know what's on&nbsp;the road before you leave.</h1>
+      <p>SafeRoute tracks reported floods, closures, and hazards in real time, and checks your route against them before you drive it.</p>
+    </div>
+
+    <svg class="auth-brand__route" width="260" height="180" viewBox="0 0 260 180" fill="none">
+      <path d="M10 160 C 60 160, 60 90, 110 90 S 160 30, 210 30 S 240 10, 250 5" stroke="#2B3B5C" stroke-width="10" stroke-linecap="round"/>
+      <path d="M10 160 C 60 160, 60 90, 110 90 S 160 30, 210 30 S 240 10, 250 5" stroke="#2F7D5C" stroke-width="2" stroke-dasharray="1 10" stroke-linecap="round"/>
+      <circle cx="110" cy="90" r="5" fill="#E8A33D"/>
+      <circle cx="10" cy="160" r="4" fill="#EDEFF5"/>
+      <circle cx="250" cy="5" r="4" fill="#EDEFF5"/>
+    </svg>
+
+    <div class="auth-brand__footnote">
+      <span>REPORTED · VERIFIED · MAPPED</span>
+    </div>
+  </div>
+
+  <!-- Form panel -->
+  <div class="auth-form-panel">
+    <form class="auth-form" id="login-form" novalidate>
+
+      <div class="auth-form__heading">
+        <h2>Log in</h2>
+        <p>New to SafeRoute? <a href="register.html">Create an account</a></p>
+      </div>
+
+      <div class="banner banner--error" id="form-banner">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.4"/><path d="M8 4.5V9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="8" cy="11.2" r="0.9" fill="currentColor"/></svg>
+        <span id="form-banner-text"></span>
+      </div>
+
+      <div class="field" id="field-email">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" required>
+        <div class="field__error">Enter the email you registered with.</div>
+      </div>
+
+      <div class="field" id="field-password">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="••••••••" autocomplete="current-password" required>
+        <div class="field__error">Enter your password.</div>
+      </div>
+
+      <button type="submit" class="btn btn-primary" id="submit-btn">
+        <span class="btn__spinner"></span>
+        <span class="btn__label">Log in</span>
+      </button>
+
+    </form>
+  </div>
+
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+</body>
+</html>
